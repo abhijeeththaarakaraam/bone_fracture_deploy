@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Bone Fracture Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <div class="main-wrapper">
+        <!-- Left Section (Form) -->
+        <div class="upload-container">
+            <h2>Upload X-ray Image for Fracture Detection</h2>
+            <form method="POST" enctype="multipart/form-data" id="upload-form">
+                <div class="upload-box">
+                    <label for="file-upload" class="custom-file-upload">
+                        <div class="upload-icon">&#8682;</div>
+                        <p>Upload your image here</p>
+                        <span>Supported: JPG, PNG</span>
+                        <!-- <strong>OR</strong> -->
+                        <button type="button" class="browse-btn"
+                            onclick="document.getElementById('file-upload').click()">Browse</button>
+                        <input id="file-upload" type="file" name="image" accept="image/*" onchange="showFileName(this)"
+                            style="display: none;">
+                        <p class="size-limit">Max size: 2MB</p>
+                    </label>
+                </div>
+
+                <div id="file-info" class="file-info hidden">
+                    <div class="file-name">
+                        <span class="file-icon">📄</span>
+                        <span id="filename-text">yourfile.png</span>
+                        <span class="file-size">1MB</span>
+                    </div>
+                    <button type="button" class="delete-btn" onclick="clearFile()">🗑️</button>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; gap: 10px; margin-top: 10px;">
+                    <button type="submit" class="submit-btn">Predict</button>
+                    <button type="button" class="submit-btn" style="background-color: #dc3545;"
+                        onclick="clearOutput()">Clear</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Right Section (Results) -->
+        <div class="results-section upload-container">
+            <div class="image-preview">
+                <h3 class="image-title">Uploaded Image:</h3>
+                {% if image %}
+                <img src="{{ url_for('static', filename='images/' + image) }}" alt="Uploaded Image">
+                {% else %}
+                <p class="no-image">No image selected</p>
+                {% endif %}
+            </div>
+
+            {% if prediction %}
+            <div class="prediction-info">
+                <h3>Prediction Results:</h3>
+                <p><strong>Predicted Part:</strong> {{ prediction }}</p>
+                <p><strong>Fracture Status:</strong> {{ fracture }}</p>
+            </div>
+            {% endif %}
+        </div>
+
+
+
+        <script>
+            function showFileName(input) {
+                if (input.files && input.files[0]) {
+                    const file = input.files[0];
+                    document.getElementById("filename-text").textContent = file.name;
+                    document.querySelector(".file-size").textContent = Math.round(file.size / 1024) + "KB";
+                    document.getElementById("file-info").classList.remove("hidden");
+                }
+            }
+
+            function clearFile() {
+                const input = document.getElementById("file-upload");
+                input.value = "";
+                document.getElementById("file-info").classList.add("hidden");
+                document.querySelector(".image-preview").classList.add("hidden");
+            }
+
+            // function clearOutput() {
+            //     clearFile();
+            //     const img = document.querySelector(".image-preview img");
+            //     if (img) img.remove();
+            //     const info = document.querySelector(".prediction-info");
+            //     if (info) info.remove();
+            // }
+
+
+            // function clearOutput() {
+            //     clearFile();
+
+            //     // Replace uploaded image with "No image selected"
+            //     const preview = document.querySelector(".image-preview");
+            //     if (preview) {
+            //         preview.innerHTML = "<h3>Uploaded Image:</h3><p style='color: #999;'>No image selected</p>";
+            //     }
+
+            //     // Remove prediction results
+            //     const info = document.querySelector(".prediction-info");
+            //     if (info) info.remove();
+            // }
+            function clearOutput() {
+                clearFile();
+
+                const preview = document.querySelector(".image-preview");
+                if (preview) {
+                    // Remove image if it exists
+                    const img = preview.querySelector("img");
+                    if (img) img.remove();
+
+                    // If no-image paragraph doesn't exist, add it
+                    let noImageText = preview.querySelector(".no-image");
+                    if (!noImageText) {
+                        const p = document.createElement("p");
+                        p.className = "no-image";
+                        p.textContent = "No image selected";
+                        preview.appendChild(p);
+                    }
+                }
+
+                // Remove prediction info
+                const info = document.querySelector(".prediction-info");
+                if (info) info.remove();
+            }
+
+
+        </script>
+</body>
+
+</html>
