@@ -1,18 +1,18 @@
-# Use Python 3.10 base image
+# Use Python 3.10 as the base image
 FROM python:3.10-slim
 
-# Set working directory
+# Set the working directory
 WORKDIR /app
 
-# Copy all files
+# Copy all project files into the container
 COPY . .
 
-# Install dependencies
-RUN pip install --upgrade pip && \
-    pip install -r requirements.txt
+# Upgrade pip and install dependencies
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
 
-# Expose port
-EXPOSE 10000
+# Expose Flask's default port
+EXPOSE 5000
 
-# Run the app
+# Command to run the Flask app
 CMD ["python", "app.py"]
